@@ -1,0 +1,19 @@
+#sort{
+  border-radius: 8px;
+  position: absolute;
+  right: 30px;
+  top: 32px;
+}
+#sort-panel{
+  height: max-content;
+}
+.card-body{
+  position: relative;
+}
+.card{
+  gap: 20px;
+}
+.sidebar{
+  padding: 1em;
+}
+

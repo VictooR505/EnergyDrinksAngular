@@ -1,0 +1,74 @@
+
+<div class="card d-flex flex-row my-5">
+  <div class="sidebar">
+
+    <div class="brand-list">
+      <mat-form-field>
+        <mat-select placeholder="Marki" multiple>
+          <mat-option *ngFor="let brand of brands">{{brand}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div class="sugar-slider">
+      <h3>Cukier</h3>
+      <mat-slider discrete min="0" max="75" step="0.5">
+        <input value="0" matSliderStartThumb>
+        <input value="75" matSliderEndThumb>
+      </mat-slider>
+    </div>
+
+    <div class="flavour-list">
+      <mat-form-field>
+        <mat-select placeholder="Smaki" multiple>
+          <mat-option *ngFor="let flavour of flavours">{{flavour}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+
+  </div>
+  <div class="card-body">
+    <ul class="text-center list-inline py-3" id="sort-panel">
+      <li class="list-inline-item" id="add">
+        <a routerLink="/addDrink" class="btn btn-info">+</a>
+      </li>
+      <li class="list-inline-item">
+        <select id="sort" [(ngModel)]="selectedSortingOption" class="form-select" (ngModelChange)="reSearch(newValue)">
+          <option selected>Sortuj</option>
+          <option value="?sortBy=brand&sortOrder=ASC"> Marka A-Z</option>
+          <option value="?sortBy=brand&sortOrder=DESC"> Marka Z-A</option>
+          <option value="?sortBy=name&sortOrder=ASC"> Nazwa A-Z</option>
+          <option value="?sortBy=name&sortOrder=DESC"> Nazwa Z-A</option>
+          <option value="?sortBy=sugar&sortOrder=ASC"> Cukier - od min</option>
+          <option value="?sortBy=sugar&sortOrder=DESC"> Cukier - od max</option>
+          <option value="?sortBy=flavour&sortOrder=ASC"> Smak A-Z</option>
+          <option value="?sortBy=flavour&sortOrder=DESC"> Smak Z-A</option>
+        </select>
+      </li>
+    </ul>
+  <table class="table table-striped table-dark" >
+    <thead class="thead-dark">
+     <tr >
+       <th scope="col">#</th>
+      <th scope="col">Marka</th>
+      <th scope="col">Nazwa</th>
+      <th scope="col">Cukier</th>
+      <th scope="col">Smak</th>
+     </tr>
+    </thead>
+    <tbody >
+    <tr *ngFor="let drink of drinks">
+      <td >{{ drink.id }} </td>
+      <td >{{ drink.brand }} </td>
+      <td >{{ drink.name }} </td>
+      <td >{{ drink.sugar }} </td>
+      <td >{{ drink.flavour }} </td>
+    </tr>
+    </tbody>
+  </table>
+    <router-outlet></router-outlet>
+  </div>
+</div>
