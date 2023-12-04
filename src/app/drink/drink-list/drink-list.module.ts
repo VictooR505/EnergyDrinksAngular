@@ -1,13 +1,11 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 
-import {HttpClientModule} from "@angular/common/http";
-import {CommonModule} from "@angular/common";
-import {DrinkListComponent} from "./drink-list.component";
-import {RouterLink, RouterOutlet} from "@angular/router";
-import {MatSelectModule} from "@angular/material/select";
-import {MatSliderModule} from "@angular/material/slider";
-import {FormsModule} from "@angular/forms";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSliderModule } from "@angular/material/slider";
+import { RouterLink, RouterOutlet } from "@angular/router";
+import { DrinkListComponent } from "./drink-list.component";
 
 @NgModule({
   declarations: [

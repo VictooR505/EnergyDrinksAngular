@@ -1,27 +1,32 @@
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {Observable, of} from "rxjs";
-import {Drink} from "./drink";
+import { Observable } from "rxjs";
+import { Drink } from "./drink";
 
 @Injectable({
   providedIn: 'root'
 })
+// ja bym nazwał może DrinkApiService, chyba że planujesz tutaj robić jakieś logiki dodatkowe
 export class DrinkService {
-  private apiUrl: string;
-  constructor(private http:HttpClient) {
-    this.apiUrl = 'http://localhost:8080/drinks';
+  private readonly apiUrl = 'http://localhost:8080/drinks';
+  
+  constructor(private http: HttpClient) {}
+
+  getAllDrinks(sortingOption: {sortBy: string, sortOrder: string}): Observable<Drink[]> {
+    const options = sortingOption ? 
+    { params: new HttpParams()
+      .set('sortBy', sortingOption.sortBy)
+      .set('sortOrder', sortingOption.sortOrder)
+    } : {};
+
+    return this.http.get<Drink[]>(this.apiUrl, options);
   }
 
-  getAll(sortingOption: string): Observable<Drink[]> {
-    const params = new HttpParams().set('sortingOption', sortingOption);
-    return this.http.get<Drink[]>(`${this.apiUrl}`+sortingOption);
+  getBrands(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/brands`);
   }
 
-  getBrands(): Observable<String[]> {
-    return this.http.get<string[]>('http://localhost:8080/drinks/brands')
-  }
-
-  getFlavours(): Observable<String[]> {
-    return this.http.get<string[]>('http://localhost:8080/drinks/flavours')
+  getFlavours(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/flavours`);
   }
 }
