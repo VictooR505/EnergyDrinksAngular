@@ -7,3 +7,12 @@ export class Drink {
   additionalInfo?: string;
   reviewsIds?: number[];
 }
+
+export interface DrinksParams {
+  brands?: string[],
+  flavours?: string[],
+  sugarMin?: number,
+  sugarMax?: number,
+  sortBy?: string,
+  sortOrder?: string
+}

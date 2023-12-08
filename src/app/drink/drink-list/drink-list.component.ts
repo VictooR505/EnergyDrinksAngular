@@ -1,16 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { isEqual } from 'lodash';
-import { Observable, Subscription, catchError, forkJoin, of } from 'rxjs';
-import { Drink } from "../drink";
+import { BehaviorSubject, Observable, Subscription, catchError, debounce, forkJoin, interval, of } from 'rxjs';
+import { Drink, DrinksParams } from "../drink";
 import { DrinkService } from "../drink.service";
 
 @Component({
   selector: 'app-drink-list',
   templateUrl: './drink-list.component.html',
   styleUrls: ['./drink-list.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush // Warto użyć gdzie się da ChangeDetection na OnPush - dużo korzystniej
-                                                  // dla optymalizacji. Dzięki temu angular nie musi sprawdzać wszystkich
-                                                  // zmian w całej aplikacji na nowo, warto poczytać jak znajdziesz chwilę
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DrinkListComponent implements OnInit, OnDestroy {
 
@@ -20,11 +18,15 @@ export class DrinkListComponent implements OnInit, OnDestroy {
   public selectedFlavours: string[] = [];
   public selectedSugarMin = 0;
   public selectedSugarMax = 75;
+  public readonly SLIDER_REQUEST_DELAY = 500;
 
+  public drinksParams: DrinksParams = {...this.selectedSortingOption};
 
-  private readonly subscription = new Subscription(); // zmienna przechowująca nasze subskrpycje abyśmy mogli je anulować przy ngOnDestroy()
+  private readonly subscription = new Subscription();
+  private sliderValue$ = new BehaviorSubject<SliderValue>(
+    {sugarMin: this.selectedSugarMin, sugarMax: this.selectedSugarMax}
+  );
 
-  // przyjęło się że zmienne asynchroniczne oznaczamy na końcu "$" dla lepsze identyfikacji
   public filtersData$: Observable<DrinksFiltersData> = this.fetchFiltersData()
     .pipe(
       catchError(() => of<DrinksFiltersData>({brands: [], flavours: []}))
@@ -35,61 +37,61 @@ export class DrinkListComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef) {
   }
 
-  // dobrą praktyką jest oznaczanie private/public wszystkich metod
   public ngOnInit(): void {
+
+    this.subscription.add(
+      this.sliderValue$
+      .pipe(
+        debounce(() => interval(this.SLIDER_REQUEST_DELAY)),
+      )
+      .subscribe((sliderValue: SliderValue) => {
+        this.drinksParams = {...this.drinksParams, ...sliderValue};
+        this.fetchDrinksData();
+      })
+    )
+   
     this.fetchDrinksData();
-
-    // zastanawiam się po co mapowanie na valueOf() ? Zaciąganie normalnego string zamiast String nie da rady?
-    // Przetestuj i daj znać bo chyba nie bedzie to potrzebne
-
-      // this.drinkService.getBrands().subscribe(data => {
-      // this.brands = data.map(str => str.valueOf());
-      // });
-      // this.drinkService.getFlavours().subscribe(data => {
-      //     this.flavours = data.map(str => str.valueOf());
-      // });
   }
 
   public ngOnDestroy(): void {
-    this.subscription.unsubscribe(); // aby zapobiec wyciekom pamięci podczas trwania np. jakiegoś trwającego requesta
-                                     // warto robić coś takiego o ile nie używasz w templatce jakichś async pipe'ów
+    this.subscription.unsubscribe();
+  }
+
+  public onSliderChange(): void {
+    // na każdą zmianę w sliderze przekazuj do subjecta zmianę. Wtedy wyemituje kolejną wartość
+    this.sliderValue$.next({
+      sugarMin: this.selectedSugarMin, // wartości brane z ngModel
+      sugarMax: this.selectedSugarMax,
+    });
+  }
+
+  public onFiltersChanged(filters: any, filterKey: keyof DrinksParams): void {
+    this.drinksParams[filterKey] = filters;
+    this.fetchDrinksData();
   }
 
   public onSortChanged(selectedSortOption: {sortBy: string, sortOrder: string}): void {
     if (!(selectedSortOption.sortBy && selectedSortOption.sortOrder)) {
       return;
     }
-    this.selectedSortingOption = selectedSortOption;
+    this.drinksParams = {...this.drinksParams, ...selectedSortOption};
     this.fetchDrinksData();
   }
 
   public compareObjects(object1: Object, object2: Object): boolean {
-    // potrzebne sprawdzenie obiektów aby zaznaczyć defaultową opcję (jako że mamy porównanie obiektów a chcemy robic komparację po ngValue)
-    // lodash to libka która oferuje ciekawe utilsowe funkcje
-    // mimo wszystko wydaje mi się lepsze takie podejście niż przekazywanie query params poprzez surowy string
     return isEqual(object1, object2);
   }
 
   private fetchDrinksData(): void {
     this.subscription.add(
-      this.drinkService.getAllDrinks(this.selectedSortingOption).subscribe((data: Drink[]) => {
+      this.drinkService.getDrinks(this.drinksParams).subscribe((data: Drink[]) => {
         this.drinks = data;
-        this.cdr.markForCheck(); // powiadamianie Angulara o zmianach dla widoku (synchronizacja) poczytaj o "Change detection OnPush"
+        this.cdr.markForCheck();
       })
     );
   }
 
-  /*private fetchFilterDrinksData(): void {
-    this.subscription.add(
-      this.drinkService.getFilterDrinks(this.selectedSortingOption).subscribe((data: Drink[]) => {
-        this.drinks = data;
-        this.cdr.markForCheck(); // powiadamianie Angulara o zmianach dla widoku (synchronizacja) poczytaj o "Change detection OnPush"
-      })
-    );
-  }*/
-
   private fetchFiltersData(): Observable<DrinksFiltersData> {
-    // do ogarnięcia rxjs, libka do asynchroniczności :D
     return forkJoin({
       brands: this.drinkService.getBrands(),
       flavours: this.drinkService.getFlavours()
@@ -98,6 +100,11 @@ export class DrinkListComponent implements OnInit, OnDestroy {
 }
 
 type DrinksFiltersData = {
-  brands: Array<string>, // mozna też użyć po prostu string[]
+  brands: Array<string>, 
   flavours: Array<string>
 };
+
+type SliderValue = {
+  sugarMin: number,
+  sugarMax: number
+}

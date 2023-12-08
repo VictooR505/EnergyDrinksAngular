@@ -1,16 +1,8 @@
 <div *ngIf="(filtersData$ | async) as filtersData" class="card d-flex flex-row my-5">
   <div class="sidebar">
-    <!-- tkzw. async pipe, świetna sprawa jeśli chodzi o asynchroniczne dane (automatycznie jest robiony unsubscribe przy ngOnDestroy), można było też wrzucić do async pipe drinks ale i tak musimy sterować nimi z poziomu komponentu także i ten sposób z subscribe jest dobry - ważne wtedy żeby anulować subskrypcję -->
-
-    <!-- sidenote: przy async pipe robimy if zazwyczaj (jeszcze się nie spotkałem żeby async pipe był poza ifem)
-    i generalnie UI Ci się nie wyswietli póki API czegoś nie zwróci albo nie złapie catchErrora. To jest powszechnie stosowane rozwiązanie.
-    Profesjonalnie byłoby zrobić jakis spinner który by się wyświetlał podczas ładowania danych.
-    Można go zrobić i wyświetlać na bazie asynchronicznej flagi "isLoading" albo cos takiego. Angular material ma gotowy spinner.
-    mat-spinner. -->
-
     <div class="brand-list">
       <mat-form-field>
-        <mat-select placeholder="Marki" multiple [(ngModel)]="selectedBrands">
+        <mat-select placeholder="Marki" multiple [(ngModel)]="selectedBrands" (ngModelChange)="onFiltersChanged($event, 'brands')">
           <mat-option *ngFor="let brand of filtersData.brands" [value]="brand">{{brand}}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -20,15 +12,15 @@
     <div class="sugar-slider">
       <h3>Cukier</h3>
       <mat-slider discrete min="0" max="75" step="0.5">
-        <input value="0" matSliderStartThumb>
-        <input value="75" matSliderEndThumb>
+        <input value="0" [(ngModel)]="selectedSugarMin" (change)="onSliderChange()" matSliderStartThumb>
+        <input value="75" [(ngModel)]="selectedSugarMax" (change)="onSliderChange()" matSliderEndThumb>
       </mat-slider>
     </div>
 
     <div class="flavour-list">
       <mat-form-field>
-        <mat-select placeholder="Smaki" multiple>
-          <mat-option *ngFor="let flavour of filtersData.flavours">{{flavour}}</mat-option>
+        <mat-select placeholder="Smaki" multiple [(ngModel)]="selectedFlavours" (ngModelChange)="onFiltersChanged($event, 'flavours')">
+          <mat-option *ngFor="let flavour of filtersData.flavours" [value]="flavour">{{flavour}}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -43,8 +35,6 @@
         <select [compareWith]="compareObjects" id="sort" class="form-select" [ngModel]="selectedSortingOption"
           (ngModelChange)="onSortChanged($event)">
           <option selected [ngValue]="{sortBy: 'id', sortOrder: 'ASC'}">Sortuj</option>
-          <!-- można się pokusić jeszcze o utworzenie jakiejs tablicy zamiast zahardkodowanych
-          options, ale to juz tobie zostawiam :D -->
           <option [ngValue]="{sortBy: 'brand', sortOrder: 'ASC'}"> Marka A-Z</option>
           <option [ngValue]="{sortBy: 'brand', sortOrder: 'DESC'}"> Marka Z-A</option>
           <option [ngValue]="{sortBy: 'name', sortOrder: 'ASC'}"> Nazwa A-Z</option>
