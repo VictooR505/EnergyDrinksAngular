@@ -15,9 +15,12 @@ import { DrinkService } from "../drink.service";
 export class DrinkListComponent implements OnInit, OnDestroy {
 
   public drinks: Drink[] = [];
-  public min = 10; //chyba nieużywane
-  public max = 40; // jak wyzej
-  public selectedSortingOption = {sortBy: 'sugar', sortOrder: 'DESC'};
+  public selectedSortingOption = {sortBy: 'id', sortOrder: 'ASC'};
+  public selectedBrands: string[] = [];
+  public selectedFlavours: string[] = [];
+  public selectedSugarMin = 0;
+  public selectedSugarMax = 75;
+
 
   private readonly subscription = new Subscription(); // zmienna przechowująca nasze subskrpycje abyśmy mogli je anulować przy ngOnDestroy()
 
@@ -75,6 +78,15 @@ export class DrinkListComponent implements OnInit, OnDestroy {
       })
     );
   }
+
+  /*private fetchFilterDrinksData(): void {
+    this.subscription.add(
+      this.drinkService.getFilterDrinks(this.selectedSortingOption).subscribe((data: Drink[]) => {
+        this.drinks = data;
+        this.cdr.markForCheck(); // powiadamianie Angulara o zmianach dla widoku (synchronizacja) poczytaj o "Change detection OnPush"
+      })
+    );
+  }*/
 
   private fetchFiltersData(): Observable<DrinksFiltersData> {
     // do ogarnięcia rxjs, libka do asynchroniczności :D
