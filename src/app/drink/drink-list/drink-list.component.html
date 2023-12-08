@@ -10,8 +10,8 @@
 
     <div class="brand-list">
       <mat-form-field>
-        <mat-select placeholder="Marki" multiple>
-          <mat-option *ngFor="let brand of filtersData.brands">{{brand}}</mat-option>
+        <mat-select placeholder="Marki" multiple [(ngModel)]="selectedBrands">
+          <mat-option *ngFor="let brand of filtersData.brands" [value]="brand">{{brand}}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -42,7 +42,7 @@
       <li class="list-inline-item">
         <select [compareWith]="compareObjects" id="sort" class="form-select" [ngModel]="selectedSortingOption"
           (ngModelChange)="onSortChanged($event)">
-          <option selected>Sortuj</option>
+          <option selected [ngValue]="{sortBy: 'id', sortOrder: 'ASC'}">Sortuj</option>
           <!-- można się pokusić jeszcze o utworzenie jakiejs tablicy zamiast zahardkodowanych
           options, ale to juz tobie zostawiam :D -->
           <option [ngValue]="{sortBy: 'brand', sortOrder: 'ASC'}"> Marka A-Z</option>
