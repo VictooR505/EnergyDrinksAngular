@@ -35,8 +35,6 @@
         <select [compareWith]="compareObjects" id="sort" class="form-select" [ngModel]="selectedSortingOption"
           (ngModelChange)="onSortChanged($event)">
           <option selected [ngValue]="{sortBy: 'id', sortOrder: 'ASC'}">Sortuj</option>
-          <option [ngValue]="{sortBy: 'brand', sortOrder: 'ASC'}"> Marka A-Z</option>
-          <option [ngValue]="{sortBy: 'brand', sortOrder: 'DESC'}"> Marka Z-A</option>
           <option [ngValue]="{sortBy: 'name', sortOrder: 'ASC'}"> Nazwa A-Z</option>
           <option [ngValue]="{sortBy: 'name', sortOrder: 'DESC'}"> Nazwa Z-A</option>
           <option [ngValue]="{sortBy: 'sugar', sortOrder: 'ASC'}"> Cukier - od min</option>

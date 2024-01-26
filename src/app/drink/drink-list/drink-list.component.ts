@@ -49,7 +49,7 @@ export class DrinkListComponent implements OnInit, OnDestroy {
         this.fetchDrinksData();
       })
     )
-   
+
     this.fetchDrinksData();
   }
 
@@ -84,7 +84,8 @@ export class DrinkListComponent implements OnInit, OnDestroy {
 
   private fetchDrinksData(): void {
     this.subscription.add(
-      this.drinkService.getDrinks(this.drinksParams).subscribe((data: Drink[]) => {
+      this.drinkService.
+      getDrinks(this.drinksParams).subscribe((data: Drink[]) => {
         this.drinks = data;
         this.cdr.markForCheck();
       })
@@ -100,11 +101,11 @@ export class DrinkListComponent implements OnInit, OnDestroy {
 }
 
 type DrinksFiltersData = {
-  brands: Array<string>, 
+  brands: Array<string>,
   flavours: Array<string>
 };
 
 type SliderValue = {
   sugarMin: number,
   sugarMax: number
-}
+};

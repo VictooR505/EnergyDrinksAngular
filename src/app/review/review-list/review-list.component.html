@@ -1,1 +1,102 @@
-<p>review-list works!</p>
+<div *ngIf="(filtersData$ | async) as filtersData" class="card d-flex flex-row my-5">
+  <div class="sidebar">
+    <div class="brand-list">
+      <mat-form-field>
+        <mat-select placeholder="Marki" multiple [(ngModel)]="selectedBrands" (ngModelChange)="onFiltersChanged($event, 'brands')">
+          <mat-option *ngFor="let brand of filtersData.brands" [value]="brand">{{brand}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="rating-slider">
+      <h3>Ocena</h3>
+      <mat-slider discrete min="0" max="10" step="0.5">
+        <input value="0" [(ngModel)]="selectedRatingMin" (change)="onSliderChange()" matSliderStartThumb>
+        <input value="10" [(ngModel)]="selectedRatingMax" (change)="onSliderChange()" matSliderEndThumb>
+      </mat-slider>
+    </div>
+
+    <div class="flavour-list">
+      <mat-form-field>
+        <mat-select placeholder="Smaki" multiple [(ngModel)]="selectedFlavours" (ngModelChange)="onFiltersChanged($event, 'flavours')">
+          <mat-option *ngFor="let flavour of filtersData.flavours" [value]="flavour">{{flavour}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="sugar-slider">
+      <h3>Cukier</h3>
+      <mat-slider discrete min="0" max="75" step="0.5">
+        <input value="0" [(ngModel)]="selectedSugarMin" (change)="onSliderChange()" matSliderStartThumb>
+        <input value="75" [(ngModel)]="selectedSugarMax" (change)="onSliderChange()" matSliderEndThumb>
+      </mat-slider>
+    </div>
+
+    <div class="date-picker">
+      <h3>Data</h3>
+    <mat-form-field>
+      <mat-label>Dodaj przedział czasowy</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input value="01-01-2021" [(ngModel)]="selectedDateMin" (change)="onDatePickerChange()" matStartDate placeholder="Start date">
+        <input value="01-01-2025" [(ngModel)]="selectedDateMax" (change)="onDatePickerChange()" matEndDate placeholder="End date">
+      </mat-date-range-input>
+      <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+    </div>
+
+  </div>
+  <div class="card-body">
+    <ul class="text-center list-inline py-3" id="sort-panel">
+      <li class="list-inline-item" id="add">
+        <a routerLink="/addDrink" class="btn btn-info">+</a>
+      </li>
+      <li class="list-inline-item">
+        <select [compareWith]="compareObjects" id="sort" class="form-select" [ngModel]="selectedSortingOption"
+                (ngModelChange)="onSortChanged($event)">
+          <option selected [ngValue]="{sortBy: 'id', sortOrder: 'ASC'}">Sortuj</option>
+          <option [ngValue]="{sortBy: 'name', sortOrder: 'ASC'}"> Nazwa A-Z</option>
+          <option [ngValue]="{sortBy: 'name', sortOrder: 'DESC'}"> Nazwa Z-A</option>
+          <option [ngValue]="{sortBy: 'sugar', sortOrder: 'ASC'}"> Cukier - od min</option>
+          <option [ngValue]="{sortBy: 'sugar', sortOrder: 'DESC'}"> Cukier - od max</option>
+          <option [ngValue]="{sortBy: 'flavour', sortOrder: 'ASC'}"> Smak A-Z</option>
+          <option [ngValue]="{sortBy: 'flavour', sortOrder: 'DESC'}"> Smak Z-A</option>
+        </select>
+      </li>
+    </ul>
+    <table class="table table-striped table-dark">
+      <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Marka</th>
+        <th scope="col">Nazwa</th>
+        <th scope="col">Cukier</th>
+        <th scope="col">Smak</th>
+        <th scope="col">Recenzent</th>
+        <th scope="col">Data</th>
+        <th scope="col">Ocena</th>
+        <th scope="col">+</th>
+        <th scope="col">-</th>
+        <th scope="col">Rozmiar</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let review of reviews">
+        <td>{{ review.id }} </td>
+        <td>{{ review.brand }} </td>
+        <td class="text-nowrap">{{ review.name }} </td>
+        <td>{{ review.sugar }} </td>
+        <td>{{ review.flavour }} </td>
+        <td>{{ review.reviewer }} </td>
+        <td class="text-nowrap">{{ review.date }} </td>
+        <td>{{ review.rating }} </td>
+        <td>{{ review.positive }} </td>
+        <td>{{ review.negative }} </td>
+        <td>{{ review.size }} </td>
+      </tr>
+      </tbody>
+    </table>
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -12,6 +12,11 @@ import { DrinkListModule } from "./drink/drink-list/drink-list.module";
 import { ShowDrinkModule } from './drink/show-drink/show-drink.module';
 import { ReviewFormComponent } from './review/review-form/review-form.component';
 import { ReviewListComponent } from './review/review-list/review-list.component';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatNativeDateModule, MatOptionModule} from "@angular/material/core";
+import {MatSelectModule} from "@angular/material/select";
+import {MatSliderModule} from "@angular/material/slider";
+import {MatDatepickerModule} from "@angular/material/datepicker";
 
 @NgModule({
   declarations: [
@@ -22,16 +27,24 @@ import { ReviewListComponent } from './review/review-list/review-list.component'
     ReviewListComponent,
     ReviewFormComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    CommonModule,
-    DrinkListModule,
-    BrowserAnimationsModule,
-    ShowDrinkModule
-  ],
-  bootstrap: [AppComponent]
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule,
+        CommonModule,
+        DrinkListModule,
+        BrowserAnimationsModule,
+        ShowDrinkModule,
+        MatFormFieldModule,
+        MatOptionModule,
+        MatSelectModule,
+        MatSliderModule,
+        MatFormFieldModule,
+        MatDatepickerModule,
+        MatNativeDateModule
+    ],
+  bootstrap: [AppComponent],
+    providers:[MatDatepickerModule]
 })
 export class AppModule { }
