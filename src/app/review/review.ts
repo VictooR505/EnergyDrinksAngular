@@ -18,8 +18,8 @@ export interface ReviewParams {
   sugarMax?: number,
   ratingMin?: number,
   ratingMax?: number,
-  dateMin?: Date,
-  dateMax?: Date,
+  dateMin?: string,
+  dateMax?: string,
   sortBy?: string,
   sortOrder?: string
 }

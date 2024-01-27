@@ -37,8 +37,8 @@
     <mat-form-field>
       <mat-label>Dodaj przedział czasowy</mat-label>
       <mat-date-range-input [rangePicker]="picker">
-        <input value="01-01-2021" [(ngModel)]="selectedDateMin" (change)="onDatePickerChange()" matStartDate placeholder="Start date">
-        <input value="01-01-2025" [(ngModel)]="selectedDateMax" (change)="onDatePickerChange()" matEndDate placeholder="End date">
+        <input value="01-01-2021" [(ngModel)]="selectedDateMin" (dateChange)="onDatePickerChange()" matStartDate placeholder="Start date">
+        <input value="01-01-2025" [(ngModel)]="selectedDateMax" (dateChange)="onDatePickerChange()" matEndDate placeholder="End date">
       </mat-date-range-input>
       <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>

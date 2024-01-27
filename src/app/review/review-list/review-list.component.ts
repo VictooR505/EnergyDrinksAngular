@@ -1,9 +1,9 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
-import {BehaviorSubject, catchError, debounce, forkJoin, interval, Observable, of, Subscription} from "rxjs";
-import {isEqual} from "lodash";
-import {Review, ReviewParams} from "../review";
-import {ReviewService} from "../review.service";
-import {MatDatepickerIntl, MatDatepickerModule, MatDateRangePicker} from "@angular/material/datepicker";
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { isEqual, isNil } from "lodash";
+import { BehaviorSubject, Observable, Subscription, catchError, combineLatest, debounce, forkJoin, interval, of } from "rxjs";
+import { Review, ReviewParams } from "../review";
+import { ReviewService } from "../review.service";
 
 @Component({
   selector: 'app-review-list',
@@ -32,7 +32,7 @@ export class ReviewListComponent {
     {sugarMin: this.selectedSugarMin, sugarMax: this.selectedSugarMax, ratingMin: this.selectedRatingMin, ratingMax: this.selectedRatingMax}
   );
   private datePickerValue$ = new BehaviorSubject<DatePicker>(
-      {dateMin: this.selectedDateMin, dateMax: this.selectedDateMax}
+      {dateMin: this.selectedDateMin.toLocaleDateString("es-CL"), dateMax: this.selectedDateMax.toLocaleDateString("es-CL")}
   );
 
   public filtersData$: Observable<ReviewFiltersData> = this.fetchFiltersData()
@@ -46,17 +46,14 @@ export class ReviewListComponent {
   }
 
   public ngOnInit(): void {
-
     this.subscription.add(
-      this.sliderValue$
-        .pipe(
-          debounce(() => interval(this.SLIDER_REQUEST_DELAY)),
-        )
-        .subscribe((sliderValue: SliderValue) => {
-          this.reviewsParams = {...this.reviewsParams, ...sliderValue};
-          this.fetchDrinksData();
-        })
-    )
+      combineLatest(this.sliderValue$, this.datePickerValue$).pipe(
+        debounce(() => interval(this.SLIDER_REQUEST_DELAY))
+      ).subscribe(([sliderValue, datePickerValue]) => {
+        this.reviewsParams = {...this.reviewsParams, ...sliderValue, ...datePickerValue};
+        this.fetchDrinksData();
+      })
+    );
 
     this.fetchDrinksData();
   }
@@ -76,9 +73,12 @@ export class ReviewListComponent {
   }
 
   public onDatePickerChange(): void {
+    if (isNil(this.selectedDateMax) || isNil(this.selectedDateMin)) {
+      return;
+    }
     this.datePickerValue$.next({
-      dateMin: this.selectedDateMin, // wartości brane z ngModel
-      dateMax: this.selectedDateMax,
+      dateMin: this.selectedDateMin.toLocaleDateString("es-CL"), // wartości brane z ngModel
+      dateMax: this.selectedDateMax.toLocaleDateString("es-CL"),
     });
   }
 
@@ -130,6 +130,6 @@ type SliderValue = {
 };
 
 type DatePicker = {
-  dateMin: Date,
-  dateMax: Date
+  dateMin: string,
+  dateMax: string
 };
